@@ -18,13 +18,23 @@
     </div>
     <div class="flex text-2xl gap-4">
       {% if user.is_authenticated %}
-        <div class="relative pr-4">
-          <button id="notifications-button" class="relative p-2">
+        <div class="relative">
+          <button id="notifications-button" class="relative py-2">
             <span id="bell-icon" class="material-symbols-outlined text-3xl">notifications</span>
-            <span id="notifications-count" class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1"></span>
+            <span id="notifications-count" class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full"></span>
           </button>
           <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-gray-800 text-white rounded shadow-lg z-50"></div>
         </div>
+        <button id="openMessagesBtn" class="relative flex items-center justify-center px-8 rounded-full hover:bg-gray-800 transition">
+            <span class="material-symbols-outlined text-white text-3xl">
+                chat
+            </span>
+            <span id="chat-unread-badge"
+                  class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1 hidden">
+            </span>
+        </button>
+
+
         <a href="{% url 'profile' %}" class="bg-green-500 text-black hover:bg-blue-500 text-3xl px-4 py-2 border-black rounded">My Profile</a>
         <form action="{% url 'accounts:logout' %}" method="post" class="inline">
             {% csrf_token %}

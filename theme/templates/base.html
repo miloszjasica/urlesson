@@ -1,38 +1,15 @@
 {% include "partials/head.html" %}
 <body class="flex flex-col min-h-screen bg-gray-900 text-white font-serif">
 
-  {% if messages %}
-    <div id="messages-container" class="fixed top-4 right-4 z-50 space-y-4 w-full max-w-sm pointer-events-none">
-      {% for message in messages %}
-        <div class="px-4 py-3 rounded shadow-lg text-white pointer-events-auto
-          {% if message.tags == 'error' %} bg-red-500
-          {% elif message.tags == 'success' %} bg-green-500
-          {% elif message.tags == 'warning' %} bg-yellow-500
-          {% else %} bg-blue-500 {% endif %}">
-          {{ message }}
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
-
   {% include "partials/navbar.html" %}
 
-  <main class="flex-grow min-h-screen">
-    {% block content %}
-    {% endblock %}
-  </main>
+    <main class="relative flex-grow">
+    {% block content %}{% endblock %}
+    {% include "messages/inbox_right.html" %}
+    </main>
 
   {% include "partials/footer.html" %}
+
+
 </body>
 </html>
-
-<script>
-  setTimeout(() => {
-    const container = document.getElementById('messages-container');
-    if (container) {
-      container.style.transition = "opacity 0.5s ease";
-      container.style.opacity = '0';
-      setTimeout(() => container.remove(), 500);
-    }
-  }, 3000);
-</script>

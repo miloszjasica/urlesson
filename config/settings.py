@@ -45,11 +45,12 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'drf_yasg',
+    'django_extensions',
     'notifications',
     'accounts',
-    'messeges_app',
+    'messages_app',
 ]
-
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 TAILWIND_APP_NAME = 'theme'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -78,6 +79,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'messages_app.context_processors.global_chat_context',
             ],
         },
     },
