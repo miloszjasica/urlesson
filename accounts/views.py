@@ -71,11 +71,9 @@ def profile_view(request):
     show_password_form = False 
 
     editable_fields = [
-        ('Email', 'email'),
-        ('Role', 'get_role_display'),
-        ('Date of birth', 'date_of_birth'),
-        ('On-site visit', 'can_commute'),
-        ('City', 'city'),
+        #('Email', 'email'),
+        #('Role', 'get_role_display'),
+        #('Date of birth', 'date_of_birth'),
         ('Password', 'password'),
     ]
 
@@ -94,7 +92,7 @@ def profile_view(request):
             else:
                 password_form = form
 
-        elif field in ['email', 'first_name', 'last_name', 'date_of_birth', 'can_commute', 'city']:
+        elif field in ['email', 'first_name', 'last_name', 'date_of_birth',]:
             setattr(user, field, value)
             user.save()
             messages.success(request, f'Changed field: {field}')

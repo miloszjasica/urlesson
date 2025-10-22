@@ -1,3 +1,57 @@
-.fc-col-header-cell-cushion {
-    color:black;
+
+  .fc-theme-standard {
+    --fc-bg-color: #1f2937;
+    --fc-border-color: #374151;
+    --fc-button-text-color: #fff;
+    --fc-button-bg-color: #2563eb;
+    --fc-button-hover-bg-color: #1d4ed8;
+    --fc-button-active-bg-color: #1e40af;
+    --fc-event-bg-color: #3b82f6;
+    --fc-event-border-color: transparent;
+    --fc-today-bg-color: rgba(37, 99, 235, 0.15);
+    --fc-page-bg-color: #111827;
+    --fc-neutral-bg-color: #1f2937;
+  }
+
+  .fc-toolbar-title {
+    color: #fff !important;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .fc .fc-col-header-cell-cushion {
+    color: #e5e7eb !important;
+    font-weight: 500;
+  }
+
+  .fc .fc-timegrid-slot-label {
+    color: #9ca3af;
+  }
+
+  .fc .fc-event {
+    padding: 2px 4px !important;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .fc .fc-event:hover {
+    filter: brightness(1.15);
+    transform: scale(1.02);
+  }
+
+  .fc .fc-button {
+    border-radius: 0.5rem !important;
+    transition: background-color 0.2s ease;
+  }
+
+  .fc .fc-button:hover {
+    opacity: 0.9;
+  }
+.fc .fc-button:active {
+        transform: scale(0.95);
+}
+
+.fc-now-indicator {
+  border-top: 2px solid #ef4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
 }

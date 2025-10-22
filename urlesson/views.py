@@ -16,6 +16,8 @@ from accounts.models import Teacher
 from .models import (
     TeacherDayOff
 )
+from django.db.models import Q
+from accounts.models import Subject
 
 # ---------------------------
 # Home & Teacher List
@@ -25,10 +27,27 @@ def home(request):
     return render(request, 'home.html')
 
 def teacher_list_view(request):
+    qs = CustomUser.objects.filter(role='teacher').select_related('teacher_profile').prefetch_related('teacher_profile__subjects')
+
+    q = request.GET.get('q')
+    if q:
+        qs = qs.filter(Q(first_name__icontains=q) | Q(last_name__icontains=q)).distinct()
+
+    subject = request.GET.get('subject')
+    if subject:
+        qs = qs.filter(teacher_profile__subjects__id=subject)
+
+    subjects = Subject.objects.all()
+
+    context = {
+        'object_list': qs,
+        'subjects': subjects,
+    }
+
     users = CustomUser.objects.filter(role='teacher').select_related('teacher_profile')
     if request.user.is_authenticated:
         users = users.exclude(id=request.user.id)
-    return render(request, 'teacher_list.html', {'object_list': users})
+    return render(request, 'teacher_list.html', context)
 
 
 # ---------------------------
@@ -217,9 +236,9 @@ def teacher_availability_json(request):
         end_dt = start_dt + timedelta(minutes=lesson.duration_minutes)
 
         color_map = {
-            "pending": "#dc3545",   # red
-            "accepted": "#28a745",  # green
-            "rejected": "#6c757d"   # grey
+            "pending": "#464646",   # red
+            "accepted": "#001aff",  # green
+            "rejected": "#000000"   # grey
         }
 
         events.append({

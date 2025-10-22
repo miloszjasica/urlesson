@@ -1,114 +1,146 @@
 {% load static tailwind_tags %}
 
-<nav class="border-gray-800">
-  <div class="flex items-center bg-gray-800 justify-between py-4 border-b border-gray-500 px-32">
-    <div class="flex">
-      <div class="text-lg flex">
-        <a href="/"><img src="{% static 'urlesson.png' %}" class="w-64 h-[auto] -mb-16 -mt-8" alt="urlesson"></a>
-      </div>
+<nav class="sticky top-0 z-50 bg-gray-900/80 backdrop-blur-2xl border-b border-gray-700 shadow-md">
+  <div class="flex items-center justify-between py-4 px-6 md:px-32">
+
+    <div class="flex items-center gap-6">
+      <a href="/" class="text-3xl font-bold text-white tracking-tight hover:text-blue-400 transition mr-8">
+        UrLesson
+      </a>
+
       {% if user.is_student %}
-        <a href="{% url 'teacher_list' %}" class="hover:underline ml-8 px-4 py-8 text-3xl underline">Teachers</a>
-      {% endif %}
-      {% if user.is_student %}
-      <a href="{% url 'student_calendar' %}" class="hover:underline ml-2 px-4 py-8 text-3xl underline">Calendar</a>
+        <a href="{% url 'teacher_list' %}" class="text-gray-300 hover:text-white transition">Teachers</a>
+        <a href="{% url 'student_calendar' %}" class="text-gray-300 hover:text-white transition">Calendar</a>
       {% endif %}
       {% if user.is_teacher %}
-      <a href="{% url 'teacher_availability' %}" class="hover:underline ml-2 px-4 py-8 text-3xl underline">My Lessons</a>
+        <a href="{% url 'teacher_availability' %}" class="text-gray-300 hover:text-white transition">My Lessons</a>
       {% endif %}
     </div>
-    <div class="flex text-2xl gap-4">
+
+    <div class="flex items-center gap-6 text-white">
+
       {% if user.is_authenticated %}
         <div class="relative">
-          <button id="notifications-button" class="relative py-2">
-            <span id="bell-icon" class="material-symbols-outlined text-3xl">notifications</span>
-            <span id="notifications-count" class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full"></span>
+          <button id="notifications-button" class="relative p-2 rounded-full hover:bg-gray-800 transition">
+            <span id="bell-icon" class="material-symbols-outlined text-2xl">notifications</span>
+            <span id="notifications-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1 hidden"></span>
           </button>
-          <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-gray-800 text-white rounded shadow-lg z-50"></div>
+
+          <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-gray-800 text-white rounded-lg shadow-lg overflow-hidden border border-gray-700 z-50"></div>
         </div>
-        <button id="openMessagesBtn" class="relative flex items-center justify-center px-8 rounded-full hover:bg-gray-800 transition">
-            <span class="material-symbols-outlined text-white text-3xl">
-                chat
-            </span>
-            <span id="chat-unread-badge"
-                  class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1 hidden">
-            </span>
+
+        <button id="openMessagesBtn" class="relative p-2 rounded-full hover:bg-gray-800 transition">
+          <span class="material-symbols-outlined text-2xl">chat</span>
+          <span id="chat-unread-badge"
+                class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1 hidden">
+          </span>
         </button>
 
+        <div class="relative">
+          <button id="profileBtn" class="relative flex items-center justify-center rounded-full overflow-hidden w-12 h-12 border-2 border-gray-600 bg-gray-800 hover:border-blue-400 transition">
+            {% if request.user.profile_image %}
+              <img src="{{ request.user.profile_image.url }}" alt="Profile" class="w-full h-full object-cover">
+            {% else %}
+              <span class="text-lg font-semibold text-white">
+                {{ request.user.first_name|default:request.user.username|slice:":1" }}{{ request.user.last_name|slice:":1" }}
+              </span>
+            {% endif %}
+          </button>
 
-        <a href="{% url 'profile' %}" class="bg-green-500 text-black hover:bg-blue-500 text-3xl px-4 py-2 border-black rounded">My Profile</a>
-        <form action="{% url 'accounts:logout' %}" method="post" class="inline">
-            {% csrf_token %}
-            <button type="submit" class="bg-yellow-500 hover:bg-red-500 text-black text-3xl px-4 py-2 border-black rounded">
-                Logout
-            </button>
-        </form>
+          <div id="profileDropdown" class="hidden absolute right-0 mt-3 w-48 bg-white text-black rounded-lg shadow-lg border border-gray-200 z-50">
+            <a href="{% url 'profile' %}" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
+            <form action="{% url 'accounts:logout' %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-100">Logout</button>
+            </form>
+          </div>
+        </div>
+
       {% else %}
-      <a href="{% url 'accounts:login' %}" class="bg-green-500 text-black hover:bg-blue-500 text-3xl px-4 py-2 border-black rounded">Login</a>
-      {% if request.path != '/'%}
-        <a href="{% url 'accounts:register' %}" class="bg-yellow-500 text-black text-3xl hover:bg-red-500 px-4 py-2 border-black rounded">Register</a>
-      {% endif %}
+        <a href="{% url 'accounts:login' %}" class="bg-blue-600 hover:bg-blue-700 text-white text-lg px-5 py-2 rounded-full transition">
+          Login
+        </a>
+        {% if request.path != '/' %}
+          <a href="{% url 'accounts:register' %}" class="bg-green-600 hover:bg-green-700 text-white text-lg px-5 py-2 rounded-full transition">
+            Register
+          </a>
+        {% endif %}
       {% endif %}
     </div>
   </div>
 </nav>
+
 <script>
-function getCookie(name) {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== "") {
-    const cookies = document.cookie.split(";");
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].trim();
-      if (cookie.startsWith(name + "=")) {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.startsWith(name + "=")) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
       }
     }
+    return cookieValue;
   }
-  return cookieValue;
-}
 
-const button = document.getElementById('notifications-button');
-const dropdown = document.getElementById('notifications-dropdown');
-const countSpan = document.getElementById('notifications-count');
+  const button = document.getElementById('notifications-button');
+  const dropdown = document.getElementById('notifications-dropdown');
+  const countSpan = document.getElementById('notifications-count');
 
-async function loadNotifications() {
-  try {
-    const res = await fetch("{% url 'notifications_json' %}");
-    const data = await res.json();
+  async function loadNotifications() {
+    try {
+      const res = await fetch("{% url 'notifications_json' %}");
+      const data = await res.json();
 
-    dropdown.innerHTML = data.map(n => `
-      <div class="px-4 py-2 hover:bg-gray-700 border-b border-gray-600">
-        ${n.message}
-      </div>
-    `).join("");
+      dropdown.innerHTML = data.map(n => `
+        <div class="px-4 py-2 hover:bg-gray-700 border-b border-gray-700">
+          ${n.message}
+        </div>
+      `).join("");
 
-    const unreadCount = data.filter(n => !n.read).length;
-    countSpan.textContent = unreadCount;
-    countSpan.style.display = unreadCount ? "inline-block" : "none";
+      const unreadCount = data.filter(n => !n.read).length;
+      if (unreadCount > 0) {
+        countSpan.textContent = unreadCount;
+        countSpan.classList.remove("hidden");
+      } else {
+        countSpan.classList.add("hidden");
+      }
 
-  } catch (err) {
-    console.error("Error:", err);
+    } catch (err) {
+      console.error("Error:", err);
+    }
   }
-}
 
-button.addEventListener('click', () => {
-  dropdown.classList.toggle('hidden');
+  button?.addEventListener('click', () => {
+    dropdown.classList.toggle('hidden');
+    if (!dropdown.classList.contains('hidden')) {
+      countSpan.classList.add('hidden');
+      fetch("{% url 'mark_notifications_read' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+          "Content-Type": "application/json"
+        },
+      }).then(() => loadNotifications());
+    }
+  });
 
-  if (!dropdown.classList.contains('hidden')) {
-    countSpan.textContent = 0;
-    countSpan.style.display = 'none';
+  loadNotifications();
 
-    fetch("{% url 'mark_notifications_read' %}", {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": getCookie("csrftoken"),
-        "Content-Type": "application/json"
-      },
-    })
-    .then(res => res.json())
-  }
-});
+  // Dropdown profilu
+  const profileBtn = document.getElementById('profileBtn');
+  const profileDropdown = document.getElementById('profileDropdown');
 
-//setInterval(loadNotifications, 10000);
-loadNotifications();
+  profileBtn?.addEventListener('click', () => {
+    profileDropdown.classList.toggle('hidden');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!profileBtn?.contains(e.target) && !profileDropdown?.contains(e.target)) {
+      profileDropdown?.classList.add('hidden');
+    }
+  });
 </script>

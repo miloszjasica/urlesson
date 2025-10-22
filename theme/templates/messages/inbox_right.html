@@ -1,40 +1,46 @@
-<div id="messagesPanel"
-     class="absolute right-0 top-0 w-1/5 bg-white h-screen shadow-2xl overflow-hidden flex flex-col hidden z-50">
+{% if user.not_authenticated %}
+<!-- Messages Panel -->
+<div id="messagesPanel" 
+     class="fixed top-0 right-0 h-screen w-1/5 min-w-[60px] bg-white shadow-2xl overflow-hidden flex flex-col z-50 transition-all duration-300 transform translate-x-[80%] hover:translate-x-0 rounded-l-3xl">
 
-    <div class="p-4 bg-blue-600 text-white flex justify-between items-center">
+    <!-- Header -->
+    <div class="p-4 bg-blue-600 text-white flex justify-between items-center rounded-tr-3xl">
         <h2 class="text-xl font-semibold">Messages</h2>
         <button id="closeMessagesBtn" class="text-white text-2xl">&times;</button>
     </div>
 
+    <!-- Conversations -->
     <div class="flex justify-between items-center p-4 border-b">
-      <h3 class="font-semibold text-gray-700">Your Conversations</h3>
-      <button id="newMsgBtn" class="text-blue-600 hover:underline text-sm">New</button>
+        <h3 class="font-semibold text-gray-700">Your Conversations</h3>
+        <button id="newMsgBtn" class="text-blue-600 hover:underline text-sm">New</button>
     </div>
 
-    <div id="userList" class="flex-1 overflow-y-auto">
-      {% for user in users %}
-          <div class="user-item p-4 border-b hover:bg-gray-100 cursor-pointer" data-user-id="{{ user.id }}">
-              <div class="text-black">{{ user.email }}</div>
-          </div>
-      {% empty %}
-          <div class="p-4 text-gray-500">No conversations.</div>
-      {% endfor %}
+    <div id="userList" class="flex-1 overflow-y-auto bg-gray-50">
+        {% for user in users %}
+            <div class="user-item p-4 border-b hover:bg-gray-100 cursor-pointer rounded-r-lg" data-user-id="{{ user.id }}">
+                <div class="text-black">{{ user.email }}</div>
+            </div>
+        {% empty %}
+            <div class="p-4 text-gray-500">No conversations.</div>
+        {% endfor %}
     </div>
 
-    <div id="newMessageList" class="hidden flex-1 overflow-y-auto border-t">
-      {% for user in all_users %}
-          {% if user != request.user %}
-              <div class="new-user-item p-4 border-b hover:bg-gray-100 cursor-pointer" data-user-id="{{ user.id }}">
-                  <div class="text-black">{{ user.email }}</div>
-              </div>
-          {% endif %}
-      {% endfor %}
+    <div id="newMessageList" class="hidden flex-1 overflow-y-auto border-t bg-gray-50">
+        {% for user in all_users %}
+            {% if user != request.user %}
+                <div class="new-user-item p-4 border-b hover:bg-gray-100 cursor-pointer rounded-r-lg" data-user-id="{{ user.id }}">
+                    <div class="text-black">{{ user.email }}</div>
+                </div>
+            {% endif %}
+        {% endfor %}
     </div>
 </div>
 
-<div id="chatWindow"
-     class="absolute right-0 top-0 h-screen w-1/5 bg-gray-50 shadow-2xl hidden flex flex-col z-50">
-    <div class="p-4 bg-blue-600 text-white flex justify-between items-center">
+<!-- Chat Window -->
+<div id="chatWindow" 
+     class="fixed top-0 right-0 h-screen w-1/5 bg-gray-50 shadow-2xl hidden flex flex-col z-50 transition-all duration-300 rounded-l-3xl">
+
+    <div class="p-4 bg-blue-600 text-white flex justify-between items-center rounded-tr-3xl">
         <h2 id="chatUserName" class="text-lg font-semibold">Chat</h2>
         <button id="closeChatBtn" class="text-white text-2xl">&times;</button>
     </div>
@@ -48,6 +54,7 @@
         </form>
     </div>
 </div>
+{% endif %}
 
 <script>
     const openBtn = document.getElementById('openMessagesBtn');

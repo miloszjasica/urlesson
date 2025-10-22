@@ -1,64 +1,79 @@
 {% extends "base.html" %}
-{% block title %}List of teachers{% endblock %}
+{% block title %}List of Teachers{% endblock %}
 
 {% block content %}
-<div class="bg-gray-900 text-white py-16 px-32">
-    <div class="grid grid-cols-4 gap-6 py-16">
+<div class="bg-gray-900 text-white py-16 px-8 md:px-32">
+    <h1 class="text-5xl font-bold text-center mb-16">Our Teachers</h1>
+    <div class="mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
+    <form method="get" class="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+        <input type="text" name="q" placeholder="Search by name" value="{{ request.GET.q|default_if_none:'' }}"
+               class="px-4 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <select name="subject" class="px-4 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <option value="">All subjects</option>
+            {% for subj in subjects %}
+            <option value="{{ subj.id }}" {% if request.GET.subject == subj.id|stringformat:"s" %}selected{% endif %}>{{ subj.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="px-4 py-2 bg-blue-500 rounded-lg text-white hover:bg-blue-600 transition">Filter</button>
+    </form>
+</div>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {% for user in object_list %}
-        <div class="border rounded-lg p-4 shadow-lg flex flex-col items-start w-full relative">
+        <div class="relative bg-gray-800 rounded-3xl shadow-2xl overflow-hidden transform transition-all hover:scale-105 hover:shadow-blue-500/50 p-6 flex flex-col items-start">
             
             {% if request.user.is_authenticated %}
-              <button 
-                  class="chat-button absolute top-4 right-4 text-blue-600 hover:text-blue-800 material-symbols-outlined" 
-                  data-user-id="{{ user.id }}"
-                  data-user-name="{{ user.first_name|escapejs }} {{ user.last_name|escapejs }}">
-                  chat
-              </button>
+            <button 
+                class="chat-button absolute top-4 right-4 text-blue-400 hover:text-blue-600 material-symbols-outlined"
+                data-user-id="{{ user.id }}"
+                data-user-name="{{ user.first_name|escapejs }} {{ user.last_name|escapejs }}">
+                chat
+            </button>
             {% endif %}
 
-            <!-- Card content -->
-            <div class="flex border-b w-full">
+            <div class="flex items-center mb-4 w-full">
                 {% if user.profile_image.url %}
-                <img src="{{ user.profile_image.url }}" alt="{{ user.email }}" class="w-20 h-20 rounded-full mb-4 object-cover" />
+                <img src="{{ user.profile_image.url }}" alt="{{ user.email }}" class="w-20 h-20 rounded-full object-cover border-2 border-blue-500">
                 {% else %}
-                <div class="w-20 h-20 rounded-full bg-gray-300 mb-4 flex items-center justify-center text-gray-600 bg-black"></div>
+                <div class="w-20 h-20 rounded-full bg-gray-600 flex items-center justify-center text-gray-400 border-2 border-gray-400">
+                    {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}
+                </div>
                 {% endif %}
 
-                <div class="ml-4 flex flex-col">
-                    <p class="text-black text-sm uppercase">
+                <div class="ml-4 flex-1">
+                    <h3 class="text-2xl font-bold">{{ user.first_name }} {{ user.last_name }}</h3>
+                    <p class="text-sm text-gray-300 mt-1">
                         {% for subject in user.teacher_profile.subjects.all %}
-                        <span class="mr-1 mb-2 px-2 py-1 bg-gray-500 inline-block">{{ subject.name }}</span>
+                        <span class="inline-block px-2 py-1 mr-1 mb-1 bg-gray-700 rounded">{{ subject.name }}</span>
                         {% empty %}
                         No subjects assigned.
                         {% endfor %}
                     </p>
-                    <h3 class="font-bold text-3xl mt-2">{{ user.first_name }} {{ user.last_name }}</h3>
                 </div>
             </div>
 
-            <div class="flex border-b w-full">
-                {{ user.gender }}, {{ user.date_of_birth }}, {{ user.can_commute }}, {{ user.city }}
+            <div class="text-gray-400 mb-4 text-sm">
+                {{ user.gender }}, {{ user.date_of_birth }},
             </div>
 
             {% if user.role == 'teacher' %}
                 {% if request.user.is_authenticated %}
-                <a href="{% url 'book_lesson' user.id %}" class="mt-2 inline-block px-4 py-2 bg-green-600 text-white rounded w-full text-center">
-                    Book lesson
+                <a href="{% url 'book_lesson' user.id %}" class="w-full text-center py-2 px-4 bg-green-500 rounded-xl font-semibold text-white mb-2 hover:bg-green-600 transition">
+                    Book Lesson
                 </a>
-                <a href="#" class="mt-2 inline-block px-4 py-2 bg-blue-600 text-white rounded w-full text-center">
-                    View details
+                <a href="#" class="w-full text-center py-2 px-4 bg-blue-500 rounded-xl font-semibold text-white hover:bg-blue-600 transition">
+                    View Details
                 </a>
                 {% else %}
-                <a href="{% url 'accounts:login' %}" class="mt-2 inline-block px-4 py-2 bg-blue-600 text-white rounded">
-                    Log In for more options
+                <a href="{% url 'accounts:login' %}" class="w-full text-center py-2 px-4 bg-blue-500 rounded-xl font-semibold text-white hover:bg-blue-600 transition">
+                    Log In for More Options
                 </a>
                 {% endif %}
             {% endif %}
         </div>
         {% empty %}
-        <p>User list is empty.</p>
+        <p class="text-center text-gray-400 text-2xl col-span-full mt-16">No teachers found.</p>
         {% endfor %}
     </div>
 </div>
-
 {% endblock %}

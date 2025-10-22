@@ -1,36 +1,68 @@
 {% extends 'base.html' %}
 {% load static tailwind_tags %}
 {% block content %}
-<div class="px-32 py-24">
-<div class="text-center text-7xl">
-    <p class="leading-[82px] tracking-[4.5px] mb-16 text-gray-200 font-medium">Learn where you want,<br> with whoever you<br>want</p>
-    <a href="{% url 'accounts:register' %}" class="bg-gray-700 text-black text-5xl hover:bg-blue-700 hover:text-black px-12 py-6 border-black rounded">Sign Up</a>
-</div>
-<div class="mt-32 border-b border-gray-500"></div>
-<div class="text-center text-7xl">
-    <p class="py-24 leading-[82px] tracking-[4.5px] mb-8 text-gray-200 font-medium">How it works?</p>
-    <div class="flex justify-center items-center gap-8 mt-16">
-    <div class="text-center">
-        <img src="{% static 'user-avatar.png' %}" class="w-64 h-auto mb-8" alt="urlesson user">
-        <p class="text-4xl">Sign Up</p>
-    </div>
-    <div class="text-7xl text-gray-200 font-thin px-12">
-        &gt;
-    </div>
-    <div class="text-center">
-        <img src="{% static 'teacher-avatar.png' %}" class="w-64 h-auto mb-8" alt="urlesson teacher">
-        <p class="text-4xl">Select a teacher</p>
-    </div>
-    <div class="text-7xl text-gray-200 font-thin px-12">
-        &gt;
-    </div>
-    <div class="text-center">
-        <img src="{% static 'calendar.png' %}" class="w-64 h-auto mb-8" alt="urlesson calendar">
-        <p class="text-4xl">Schedule a lesson</p>
-    </div>
-</div>
-</div>
-<!-- <div class="mt-32 border-b border-gray-500"></div> -->
+<div class="relative overflow-hidden bg-gradient-to-b from-gray-900 via-gray-700 to-gray-900 text-white">
+  <!-- HERO SECTION -->
+  <div class="relative px-8 md:px-32 py-24 text-center z-10">
+    <h1 class="text-5xl md:text-7xl leading-tight font-bold tracking-tight mb-10">
+      Learn <span class="text-blue-400">wherever</span> you want,<br>
+      with <span class="text-indigo-400">whoever</span> you want
+    </h1>
+    <p class="text-gray-400 text-xl md:text-2xl mb-16 max-w-3xl mx-auto">
+      Find expert tutors, book lessons in seconds, and study on your own terms.
+    </p>
+    <a href="{% url 'accounts:register' %}" 
+       class="inline-block bg-blue-600 hover:bg-blue-700 text-white text-3xl md:text-4xl px-10 py-5 rounded-full shadow-lg transform transition-all hover:scale-105 hover:shadow-blue-500/40">
+       Sign Up Now
+    </a>
 
+    
+  </div>
+
+  <!-- DIVIDER -->
+  <div class="border-t border-black mx-16 opacity-50"></div>
+
+  <!-- HOW IT WORKS -->
+  <div class="text-center py-32">
+    <h2 class="text-4xl md:text-6xl font-semibold mb-20 tracking-tight text-gray-100">
+      How it works
+    </h2>
+
+    <div class="flex flex-col md:flex-row justify-center items-center gap-16 md:gap-12 px-8 md:px-0">
+      <!-- Step 1 -->
+      <div class="group text-center w-64 transform transition-all hover:scale-105">
+        <div class="w-32 h-32 mx-auto mb-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-xl group-hover:shadow-blue-500/50">
+          <img src="{% static 'user-avatar.png' %}" alt="Sign Up" class="w-16 h-16">
+        </div>
+        <p class="text-3xl font-semibold text-gray-100">Sign Up</p>
+        <p class="text-gray-400 text-lg mt-2">Create your free account and set up your profile.</p>
+      </div>
+
+      <!-- Arrow -->
+      <div class="hidden md:block text-7xl text-gray-400 font-thin">&gt;</div>
+
+      <!-- Step 2 -->
+      <div class="group text-center w-64 transform transition-all hover:scale-105">
+        <div class="w-32 h-32 mx-auto mb-8 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-xl group-hover:shadow-indigo-500/50">
+          <img src="{% static 'teacher-avatar.png' %}" alt="Select a teacher" class="w-16 h-16">
+        </div>
+        <p class="text-3xl font-semibold text-gray-100">Select a Teacher</p>
+        <p class="text-gray-400 text-lg mt-2">Browse verified tutors and find your perfect match.</p>
+      </div>
+
+      <!-- Arrow -->
+      <div class="hidden md:block text-7xl text-gray-400 font-thin">&gt;</div>
+
+      <!-- Step 3 -->
+      <div class="group text-center w-64 transform transition-all hover:scale-105">
+        <div class="w-32 h-32 mx-auto mb-8 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center shadow-xl group-hover:shadow-purple-500/50">
+          <img src="{% static 'calendar.png' %}" alt="Schedule a lesson" class="w-16 h-16">
+        </div>
+        <p class="text-3xl font-semibold text-gray-100">Schedule a Lesson</p>
+        <p class="text-gray-400 text-lg mt-2">Book your class and start learning instantly.</p>
+      </div>
+    </div>
+  </div>
 </div>
+
 {% endblock %}

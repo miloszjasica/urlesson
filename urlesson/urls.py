@@ -7,6 +7,7 @@ from .views import student_calendar_view, student_calendar_json
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('grappelli/', include('grappelli.urls')),
     
     path('accounts/', include('accounts.urls', namespace='accounts')),
     path('notifications/', include('notifications.urls')),

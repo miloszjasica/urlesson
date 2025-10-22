@@ -1,29 +1,36 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="px-32 py-8">
-<h2 class="text-xl font-bold mb-4">Book a Lesson with {{ teacher.get_full_name }}</h2>
-<div id="calendar" class="mb-8"></div>
+<div class="bg-gradient-to-b from-gray-900 via-gray-700 to-gray-900 text-white py-16 px-8 md:px-32 min-h-screen relative">
+    <h2 class="text-5xl font-bold mb-12 text-center">Book a Lesson with <span class="text-blue-400">{{ teacher.get_full_name }}</span></h2>
 
-<div id="booking-form" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-  <form method="post" class="bg-gray-600 p-6 w-[600px] h-auto rounded-lg shadow-lg flex flex-col justify-between">
-    <div class="mb-6 text-2xl whitespace-nowrap">Lesson with <span class="underline">{{ teacher.get_full_name }}</span>
-</div>
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="hidden" name="selected_date" id="selected-date">
-    <input type="hidden" name="selected_time" id="selected-time">
-    <p id="price-display" class="mt-4 text-xl text-white">Final Price: <span id="final-price">0.00</span> zł</p>
-    <button type="submit" class="bg-yellow-500 hover:bg-green-500 text-black text-3xl px-4 py-2 border-black rounded mt-8">Book Lesson</button>
-  </form>
-</div>
+    <div id="calendar" class="mb-12 rounded-xl shadow-2xl overflow-hidden"></div>
 
+    <!-- Booking Form Modal -->
+    <div id="booking-form" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <form method="post" class="bg-gray-800 p-8 w-full max-w-lg rounded-3xl shadow-2xl flex flex-col gap-6 relative">
+            <h3 class="text-3xl font-bold text-center mb-4">Lesson with <span class="text-blue-400 underline">{{ teacher.get_full_name }}</span></h3>
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <input type="hidden" name="selected_date" id="selected-date">
+            <input type="hidden" name="selected_time" id="selected-time">
+
+            <p class="text-xl text-gray-300">Final Price: <span id="final-price" class="font-semibold text-white">0.00</span> zł</p>
+
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transform transition-all hover:scale-105">
+                Book Lesson
+            </button>
+            <button type="button" onclick="document.getElementById('booking-form').classList.add('hidden')"
+                class="absolute top-4 right-4 text-gray-300 hover:text-white text-3xl">&times;</button>
+        </form>
+    </div>
+</div>
 
 <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet'/>
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js '></script>
-</div>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
 
 <script>
- document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     const calendarEl = document.getElementById('calendar');
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'timeGridWeek',
@@ -36,89 +43,100 @@
             url: "{% url 'lesson_calendar_json' %}",
             extraParams: { teacher_id: "{{ teacher.id }}" }
         },
-        slotLabelFormat: {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-        },
-        dateClick: function(info) {
-        },
-        eventClick: function(info) {
-          const type = info.event.extendedProps.type;
-
-          if (type === 'availability') {
-              const start = new Date(info.event.start);
-              const date = start.toISOString().split("T")[0];
-              const time = start.toTimeString().split(" ")[0].slice(0,5);
-
-              document.getElementById("selected-date").value = date;
-              document.getElementById("selected-time").value = time;
-
-              document.getElementById("booking-form").classList.remove("hidden");
-              document.getElementById("booking-form").scrollIntoView({ behavior: "smooth" });
-
-          } else if (type === 'lesson') {
-              alert("This slot is already booked.");
-          } else if (type === 'blocked') {
-              alert("Teacher is busy at this time.");
-          }
-      },
+        slotLabelFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
         selectable: true,
         select: function(info) {
             const start = new Date(info.start);
             const end = new Date(info.end);
-            
             const duration = (end - start) / (1000 * 60);
-            if (duration < 30) {
-                alert("Please select at least 30 minutes for a lesson.");
-                calendar.unselect();
-                return;
-            }
+            if(duration < 30){ alert("Please select at least 30 minutes."); calendar.unselect(); return; }
 
             const date = start.toISOString().split("T")[0];
             const time = start.toTimeString().split(" ")[0].slice(0,5);
 
-            // Automaticly fill date and time
             document.getElementById("selected-date").value = date;
             document.getElementById("selected-time").value = time;
 
             const dateInput = document.querySelector('input[name="date"]');
             const timeInput = document.querySelector('input[name="time"]');
-            if (dateInput) dateInput.value = date;
-            if (timeInput) timeInput.value = time;
+            if(dateInput) dateInput.value = date;
+            if(timeInput) timeInput.value = time;
 
-            // Show form
             document.getElementById("booking-form").classList.remove("hidden");
-            document.getElementById("booking-form").scrollIntoView({ behavior: "smooth" });
-
+            document.getElementById("booking-form").scrollIntoView({behavior:"smooth"});
             calendar.unselect();
         },
-        eventOverlap: function(stillEvent, movingEvent) {
-            return stillEvent.display === 'auto' && movingEvent.display === 'background';
-        },
-
+        eventClick: function(info){
+            const type = info.event.extendedProps.type;
+            if(type === 'availability'){
+                const start = new Date(info.event.start);
+                const date = start.toISOString().split("T")[0];
+                const time = start.toTimeString().split(" ")[0].slice(0,5);
+                document.getElementById("selected-date").value = date;
+                document.getElementById("selected-time").value = time;
+                document.getElementById("booking-form").classList.remove("hidden");
+                document.getElementById("booking-form").scrollIntoView({behavior:"smooth"});
+            } else if(type==='lesson'){ alert("This slot is already booked."); }
+              else if(type==='blocked'){ alert("Teacher is busy at this time."); }
+        }
     });
-
     calendar.render();
-  });
-</script>
-<script>
-  const pricePerMinute = parseFloat("{{ price_individual }}");
-  const durationField = document.querySelector('#id_duration_minutes');
-  const finalPriceSpan = document.getElementById('final-price');
+});
 
-  function calculatePrice() {
+function renderNowIndicator() {
+
+  document.querySelectorAll('.fc-now-indicator').forEach(el => el.remove());
+
+  const now = new Date();
+  const calendarEl = calendarElRef.querySelector('.fc-timeGridWeek-view, .fc-timeGridDay-view');
+
+  if (!calendarEl) return;
+
+  const dayColumn = calendarEl.querySelector(
+    `.fc-daygrid-day[data-date="${now.toISOString().split('T')[0]}"], 
+     .fc-timegrid-col[data-date="${now.toISOString().split('T')[0]}"]`
+  );
+
+  if (!dayColumn) return;
+
+  const timeGrid = calendarEl.querySelector('.fc-timegrid-slots');
+  const startHour = 6;
+  const pixelsPerHour = timeGrid.offsetHeight / (22 - startHour);
+  const topOffset = ((now.getHours() + now.getMinutes() / 60) - startHour) * pixelsPerHour;
+
+  const line = document.createElement('div');
+  line.classList.add('fc-now-indicator');
+  line.style.position = 'absolute';
+  line.style.top = `${topOffset}px`;
+  line.style.left = '0';
+  line.style.right = '0';
+  line.style.height = '2px';
+  line.style.background = 'red';
+  line.style.zIndex = '9999';
+  line.style.boxShadow = '0 0 6px rgba(255,0,0,0.6)';
+  line.style.transition = 'top 0.5s linear';
+
+  dayColumn.appendChild(line);
+}
+
+const calendarElRef = document.getElementById('calendar');
+
+renderNowIndicator();
+setInterval(renderNowIndicator, 300000);
+
+// Price calculation
+const pricePerMinute = parseFloat("{{ price_individual }}");
+const durationField = document.querySelector('#id_duration_minutes');
+const finalPriceSpan = document.getElementById('final-price');
+
+function calculatePrice() {
     const duration = parseInt(durationField.value);
-    if (!isNaN(duration)) {
-      const price = pricePerMinute * duration;
-      finalPriceSpan.textContent = price.toFixed(2);
-    } else {
-      finalPriceSpan.textContent = "0.00";
-    }
-  }
+    if(!isNaN(duration)){
+        finalPriceSpan.textContent = (pricePerMinute * duration).toFixed(2);
+    } else finalPriceSpan.textContent = "0.00";
+}
 
-  durationField.addEventListener('change', calculatePrice);
-  window.addEventListener('DOMContentLoaded', calculatePrice);
+durationField.addEventListener('change', calculatePrice);
+window.addEventListener('DOMContentLoaded', calculatePrice);
 </script>
 {% endblock %}
-

@@ -48,8 +48,8 @@ class CustomUser(AbstractUser):
 
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     date_of_birth = models.DateField(null=True, blank=True)
-    can_commute = models.BooleanField(default=False) #in future
-    city = models.CharField(max_length=100, blank=True) #if can commute
+    #can_commute = models.BooleanField(default=False) #in future
+    #city = models.CharField(max_length=100, blank=True) #if can commute
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, null=True, blank=True)
 
     USERNAME_FIELD = 'email'

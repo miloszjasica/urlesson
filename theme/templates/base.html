@@ -1,5 +1,5 @@
 {% include "partials/head.html" %}
-<body class="flex flex-col min-h-screen bg-gray-900 text-white font-serif">
+<body class="flex min-h-screen flex-col bg-gray-900 text-white font-serif">
 
   {% include "partials/navbar.html" %}
 
@@ -13,3 +13,26 @@
 
 </body>
 </html>
+
+<script>
+    //chat functionality - open chat window with user which is clicked
+    document.querySelectorAll('.chat-button').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const userId = btn.getAttribute('data-user-id');
+        const userName = btn.getAttribute('data-user-name');
+
+        if (!userId) return;
+
+        currentUserId = userId;
+
+        const chatUserName = document.getElementById('chatUserName');
+        chatUserName.textContent = userName;
+
+        const chatWindow = document.getElementById('chatWindow');
+        chatWindow.classList.remove('hidden');
+
+        loadMessages(userId);
+    });
+});
+
+</script>

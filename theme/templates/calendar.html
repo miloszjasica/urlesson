@@ -1,20 +1,20 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="px-32 py-8">
-  <div class="mb-8 border-b border-gray-600">
-    <p class="flex text-5xl font-bold mb-4 justify-center">My Lessons</p>
-  </div>
-  <div class="flex grid-cols-2 gap-32">
+<div class="px-32 py-8 bg-gradient-to-b from-gray-900 via-gray-700 to-gray-900">
+
+  <div class="flex grid-cols-2 gap-24 items-start border-gray-600">
     <div>
-      <h2 class="text-3xl font-bold mt-8 mb-2">Availability</h2>
+    <h2 class="bg-gray-900 font-bold text-base mt-[68px] border border-gray-600 text-center">Availability</h2>
+    <div class="px-8 bg-gray-800 shadow-lg border-gray-600 border-l border-b border-r">
+      <div class="py-2"></div>
       <form method="post" class="mb-6">
         {% csrf_token %}
         {{ recurring_form.as_p }}
         <div class="py-2"></div>
-        <button type="submit" name="add_recurring" class="px-4 py-2 bg-green-600 text-white rounded-lg">
+        <button type="submit" name="add_recurring" class="px-4 py-2 bg-green-600 text-white rounded-lg w-full">
           Add availability
         </button>
-        <button type="submit" name="delete_recurring" class="px-4 py-2 bg-red-600 text-white rounded-lg">
+        <button type="submit" name="delete_recurring" class="px-4 py-2 bg-red-600 text-white rounded-lg w-full mt-2">
           Delete availability
       </form>
       
@@ -23,6 +23,7 @@
         {{ recurring_form.errors }}
       </div>
       {% endif %}
+    </div>
     </div>
     <div id='calendar'></div>
   </div>
@@ -58,9 +59,9 @@ document.addEventListener('DOMContentLoaded', function () {
     height: 'auto',
     allDaySlot: false,
     headerToolbar: {
-      left: 'prev,next today',
+      right: 'prev,next',
       center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      left: 'today'
     },
     events: function(fetchInfo, successCallback) {
       fetch("{% url 'teacher_availability_json' %}?teacher_id={{ teacher.id }}")
@@ -117,6 +118,47 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   calendar.render();
+
+function renderNowIndicator() {
+
+  document.querySelectorAll('.fc-now-indicator').forEach(el => el.remove());
+
+  const now = new Date();
+  const calendarEl = calendarElRef.querySelector('.fc-timeGridWeek-view, .fc-timeGridDay-view');
+
+  if (!calendarEl) return;
+
+  const dayColumn = calendarEl.querySelector(
+    `.fc-daygrid-day[data-date="${now.toISOString().split('T')[0]}"], 
+     .fc-timegrid-col[data-date="${now.toISOString().split('T')[0]}"]`
+  );
+
+  if (!dayColumn) return;
+
+  const timeGrid = calendarEl.querySelector('.fc-timegrid-slots');
+  const startHour = 6;
+  const pixelsPerHour = timeGrid.offsetHeight / (22 - startHour);
+  const topOffset = ((now.getHours() + now.getMinutes() / 60) - startHour) * pixelsPerHour;
+
+  const line = document.createElement('div');
+  line.classList.add('fc-now-indicator');
+  line.style.position = 'absolute';
+  line.style.top = `${topOffset}px`;
+  line.style.left = '0';
+  line.style.right = '0';
+  line.style.height = '2px';
+  line.style.background = 'red';
+  line.style.zIndex = '9999';
+  line.style.boxShadow = '0 0 6px rgba(255,0,0,0.6)';
+  line.style.transition = 'top 0.5s linear';
+
+  dayColumn.appendChild(line);
+}
+
+const calendarElRef = document.getElementById('calendar');
+
+renderNowIndicator();
+setInterval(renderNowIndicator, 300000);
 
   // Modal buttons
   document.getElementById('accept-btn').addEventListener('click', () => updateLessonStatus('accept'));
