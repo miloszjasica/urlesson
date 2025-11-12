@@ -1,12 +1,17 @@
 {% include "partials/head.html" %}
-<body class="flex min-h-screen flex-col bg-gray-900 text-white font-serif">
+<body class="flex min-h-screen flex-col bg-gradient-to-b from-gray-900 via-gray-700 to-gray-900 text-white font-serif">
 
   {% include "partials/navbar.html" %}
 
-    <main class="relative flex-grow">
-    {% block content %}{% endblock %}
+  <main class="relative flex-grow {% if user.is_authenticated %}pr-[16.6667%]{% endif %}">
+      {% block content %}{% endblock %}
+  </main>
+
+  {% if user.is_authenticated %}
     {% include "messages/inbox_right.html" %}
-    </main>
+  {% endif %}
+
+  {% include "messages/inbox_right.html" %}
 
   {% include "partials/footer.html" %}
 

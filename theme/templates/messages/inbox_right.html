@@ -1,145 +1,73 @@
-{% if user.not_authenticated %}
+{% if user.is_authenticated %}
 <!-- Messages Panel -->
-<div id="messagesPanel" 
-     class="fixed top-0 right-0 h-screen w-1/5 min-w-[60px] bg-white shadow-2xl overflow-hidden flex flex-col z-50 transition-all duration-300 transform translate-x-[80%] hover:translate-x-0 rounded-l-3xl">
-
-    <!-- Header -->
-    <div class="p-4 bg-blue-600 text-white flex justify-between items-center rounded-tr-3xl">
-        <h2 class="text-xl font-semibold">Messages</h2>
-        <button id="closeMessagesBtn" class="text-white text-2xl">&times;</button>
-    </div>
+<div id="messagesPanel"
+     class="fixed right-0 top-24 h-[calc(100vh-13rem)] w-1/6 min-w-[250px] bg-white/0
+            overflow-hidden flex flex-col z-40">
 
     <!-- Conversations -->
-    <div class="flex justify-between items-center p-4 border-b">
-        <h3 class="font-semibold text-gray-700">Your Conversations</h3>
-        <button id="newMsgBtn" class="text-blue-600 hover:underline text-sm">New</button>
+    <div class="flex justify-between items-center p-4 border-b border-gray-700/50 ">
+        <h3 class="font-semibold text-gray-200 text-xl">Your Conversations</h3>
+        <button id="newMsgBtn" class="text-blue-400 hover:text-blue-300 text-base transition underline pr-4">New</button>
     </div>
 
-    <div id="userList" class="flex-1 overflow-y-auto bg-gray-50">
+    <!-- Existing Conversations -->
+    <div id="userList" class="flex-1 overflow-y-auto">
         {% for user in users %}
-            <div class="user-item p-4 border-b hover:bg-gray-100 cursor-pointer rounded-r-lg" data-user-id="{{ user.id }}">
-                <div class="text-black">{{ user.email }}</div>
+        <div class="user-item flex items-center gap-3 p-3 hover:bg-white/10 cursor-pointer transition rounded-r-lg" data-user-id="{{ user.id }}">
+            
+            {% if user.profile_image.url %}
+            <img src="{{ user.profile_image.url }}" alt="{{ user.email }}" class="w-10 h-10 rounded-full object-cover border-2 border-blue-500/50">
+            {% else %}
+            <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-gray-400 border border-gray-500">
+                {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}
             </div>
+            {% endif %}
+            
+            <div class="flex flex-col">
+                <span class="text-sm font-semibold text-gray-100">{{ user.first_name }} {{ user.last_name }}</span>
+                <span class="text-xs text-gray-400">{{ user.email }}</span>
+            </div>
+        </div>
         {% empty %}
-            <div class="p-4 text-gray-500">No conversations.</div>
+        <div class="p-4 text-gray-400 text-sm">No conversations.</div>
         {% endfor %}
     </div>
 
-    <div id="newMessageList" class="hidden flex-1 overflow-y-auto border-t bg-gray-50">
+    <!-- New Message List -->
+    <div id="newMessageList" class="hidden flex-1 overflow-y-auto border-t border-gray-700/40">
         {% for user in all_users %}
             {% if user != request.user %}
-                <div class="new-user-item p-4 border-b hover:bg-gray-100 cursor-pointer rounded-r-lg" data-user-id="{{ user.id }}">
-                    <div class="text-black">{{ user.email }}</div>
+            <div class="new-user-item flex items-center gap-3 p-3 border-b border-gray-700/40 hover:bg-white/10 cursor-pointer transition rounded-r-lg" data-user-id="{{ user.id }}">
+                
+                {% if user.profile_image.url %}
+                <img src="{{ user.profile_image.url }}" alt="{{ user.email }}" class="w-10 h-10 rounded-full object-cover border-2 border-blue-500/50">
+                {% else %}
+                <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-gray-400 border border-gray-500">
+                    {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}
                 </div>
+                {% endif %}
+                
+                <div class="flex flex-col">
+                    <span class="text-sm font-semibold text-gray-100">{{ user.first_name }} {{ user.last_name }}</span>
+                    <span class="text-xs text-gray-400">{{ user.email }}</span>
+                </div>
+            </div>
             {% endif %}
         {% endfor %}
-    </div>
-</div>
-
-<!-- Chat Window -->
-<div id="chatWindow" 
-     class="fixed top-0 right-0 h-screen w-1/5 bg-gray-50 shadow-2xl hidden flex flex-col z-50 transition-all duration-300 rounded-l-3xl">
-
-    <div class="p-4 bg-blue-600 text-white flex justify-between items-center rounded-tr-3xl">
-        <h2 id="chatUserName" class="text-lg font-semibold">Chat</h2>
-        <button id="closeChatBtn" class="text-white text-2xl">&times;</button>
-    </div>
-
-    <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-2"></div>
-
-    <div class="p-4 border-t bg-white">
-        <form id="chatForm" class="flex">
-            <input type="text" id="messageInput" class="flex-1 border rounded-l px-3 py-2 text-black" placeholder="Write a message..." />
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-r">Send</button>
-        </form>
     </div>
 </div>
 {% endif %}
 
 <script>
-    const openBtn = document.getElementById('openMessagesBtn');
-    const closeBtn = document.getElementById('closeMessagesBtn');
-    const panel = document.getElementById('messagesPanel');
-    const chatWindow = document.getElementById('chatWindow');
-    const chatMessages = document.getElementById('chatMessages');
-    const chatUserName = document.getElementById('chatUserName');
-    const chatForm = document.getElementById('chatForm');
-    const messageInput = document.getElementById('messageInput');
-    const closeChatBtn = document.getElementById('closeChatBtn');
-
-    let currentUserId = null;
-
-    openBtn.addEventListener('click', () => {
-        panel.classList.remove('hidden');
-    });
-
-    closeBtn.addEventListener('click', () => {
-        panel.classList.add('hidden');
-    });
-
-    closeChatBtn.addEventListener('click', () => {
-        chatWindow.classList.add('hidden');
-    });
-
-    document.querySelectorAll('.user-item').forEach(item => {
-        item.addEventListener('click', () => {
-            const userId = item.getAttribute('data-user-id');
-            currentUserId = userId;
-            chatUserName.textContent = item.textContent.trim();
-            chatWindow.classList.remove('hidden'); // show instead of sliding
-            loadMessages(userId);
-        });
-    });
-
-    // Load messages (AJAX GET)
-    function loadMessages(userId) {
-        fetch(`/messages/conversation_json/${userId}/`)
-            .then(res => res.json())
-            .then(data => {
-                chatMessages.innerHTML = '';
-                data.messages.forEach(msg => {
-                    const isMine = msg.sender_id === {{ request.user.id }};
-                    const msgDiv = document.createElement('div');
-                    msgDiv.className = `p-2 rounded-lg ${isMine ? 'bg-blue-500 text-white self-end' : 'bg-gray-200'} max-w-xs`;
-                    msgDiv.textContent = msg.content;
-                    chatMessages.appendChild(msgDiv);
-                });
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            });
-    }
-
-    // Send message (AJAX POST)
-    chatForm.addEventListener('submit', e => {
-        e.preventDefault();
-        const content = messageInput.value.trim();
-        if (!content || !currentUserId) return;
-
-        fetch(`/messages/conversation_json/${currentUserId}/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({ content })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                messageInput.value = '';
-                loadMessages(currentUserId);
-            }
-        });
-    });
-
-    // Refresh every 3 seconds (optional)
-    // setInterval(() => {
-    //     if (currentUserId) loadMessages(currentUserId);
-    // }, 3000);
-
+document.addEventListener('DOMContentLoaded', () => {
     const newMsgBtn = document.getElementById('newMsgBtn');
-    const newMessageList = document.getElementById('newMessageList');
     const userList = document.getElementById('userList');
+    const newMessageList = document.getElementById('newMessageList');
+    const chatWindow = document.getElementById('chatWindow');
+    const chatUserName = document.getElementById('chatUserName');
+    const chatMessages = document.getElementById('chatMessages');
 
+    // --- Toggle New Messages list ---
     newMsgBtn.addEventListener('click', () => {
         if (newMessageList.classList.contains('hidden')) {
             newMessageList.classList.remove('hidden');
@@ -152,17 +80,53 @@
         }
     });
 
-    document.querySelectorAll('.new-user-item').forEach(item => {
-        item.addEventListener('click', () => {
-            const userId = item.getAttribute('data-user-id');
-            currentUserId = userId;
-            chatUserName.textContent = item.textContent.trim();
-            chatWindow.classList.remove('hidden');
-            loadMessages(userId);
-            // switch back to conversation list
-            newMessageList.classList.add('hidden');
-            userList.classList.remove('hidden');
-            newMsgBtn.textContent = 'New';
-        });
+    // --- Funkcja do otwierania konwersacji ---
+    function openConversation(userId, userName) {
+        if (!userId) return;
+        // Ustawiamy nagłówek chat
+        chatUserName.textContent = userName;
+        chatWindow.classList.remove('hidden');
+
+        // Po kliknięciu wracamy do listy konwersacji
+        newMessageList.classList.add('hidden');
+        userList.classList.remove('hidden');
+        newMsgBtn.textContent = 'New';
+
+        // Ładujemy wiadomości AJAX-em
+        fetch(`/messages/conversation_json/${userId}/`)
+            .then(res => res.json())
+            .then(data => {
+                chatMessages.innerHTML = '';
+                data.messages.forEach(msg => {
+                    const isMine = msg.sender_id === {{ request.user.id }};
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = `p-2 rounded-lg ${isMine ? 'bg-blue-500 text-white self-end' : 'bg-white/20 text-gray-100'} max-w-xs mb-1`;
+                    msgDiv.textContent = msg.content;
+                    chatMessages.appendChild(msgDiv);
+                });
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+    }
+
+    // --- Delegacja kliknięć w istniejącej liście ---
+    userList.addEventListener('click', (e) => {
+        const item = e.target.closest('.user-item');
+        if (!item) return;
+        const userId = item.getAttribute('data-user-id');
+        const userName = item.querySelector('span').textContent.trim();
+        openConversation(userId, userName);
     });
+
+    // --- Delegacja kliknięć w nowej liście ---
+    newMessageList.addEventListener('click', (e) => {
+        const item = e.target.closest('.new-user-item');
+        if (!item) return;
+        const userId = item.getAttribute('data-user-id');
+        const userName = item.querySelector('span').textContent.trim();
+        openConversation(userId, userName);
+    });
+});
 </script>
+
+
+

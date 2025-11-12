@@ -2,8 +2,7 @@
 {% block title %}List of Teachers{% endblock %}
 
 {% block content %}
-<div class="bg-gray-900 text-white py-16 px-8 md:px-32">
-    <h1 class="text-5xl font-bold text-center mb-16">Our Teachers</h1>
+<div class="text-white py-16 px-8 md:px-32">
     <div class="mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
     <form method="get" class="flex flex-col md:flex-row gap-2 w-full md:w-auto">
         <input type="text" name="q" placeholder="Search by name" value="{{ request.GET.q|default_if_none:'' }}"
@@ -18,9 +17,9 @@
     </form>
 </div>
     
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {% for user in object_list %}
-        <div class="relative bg-gray-800 rounded-3xl shadow-2xl overflow-hidden transform transition-all hover:scale-105 hover:shadow-blue-500/50 p-6 flex flex-col items-start">
+        <div class="relative bg-gray-800 rounded-3xl shadow-2xl overflow-hidden transform transition-all hover:shadow-gray-500/50 p-6 flex flex-col items-start">
             
             {% if request.user.is_authenticated %}
             <button 
