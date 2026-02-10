@@ -1,7 +1,8 @@
 from django.urls import path
 from .views import register_view, register_extra_view
 from django.contrib.auth import views as auth_views
-from .views import profile_view
+from .views import profile_view, teacher_json
+
 
 app_name = 'accounts'
 
@@ -15,4 +16,5 @@ urlpatterns = [
     path('register/', register_view, name='register'),
     path('register/extra/', register_extra_view, name='register_extra'),
     path("profile/", profile_view, name="profile"),
+    path('teachers/<int:pk>/json/', teacher_json, name='teacher_json'),
 ]

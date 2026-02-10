@@ -248,7 +248,9 @@ def teacher_availability_json(request):
             "end": end_dt.isoformat(),
             "color": color_map.get(lesson.status, "#007bff"),
             "type": "lesson",
-            "status": lesson.status
+            "status": lesson.status,
+            "student_name": lesson.student.get_full_name(),
+            "student_email": lesson.student.email,
         })
 
 

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}List of Teachers{% endblock %}
 
 {% block content %}
@@ -23,8 +24,8 @@
             
 
             <div class="flex items-center mb-4 w-full">
-                {% if user.profile_image.url %}
-                <img src="{{ user.profile_image.url }}" alt="{{ user.email }}" class="w-20 h-20 rounded-full object-cover border-2 border-blue-500">
+                {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" alt="{{ user.email }}" class="w-20 h-20 rounded-full object-cover border-2 border-blue-500">
                 {% else %}
                 <div class="w-20 h-20 rounded-full bg-gray-600 flex items-center justify-center text-gray-400 border-2 border-gray-400">
                     {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}
@@ -43,18 +44,18 @@
                 </div>
             </div>
 
-            <div class="text-gray-400 mb-4 text-sm">
-                {{ user.gender }}, {{ user.date_of_birth }},
-            </div>
 
             {% if user.role == 'teacher' %}
                 {% if request.user.is_authenticated %}
                 <a href="{% url 'book_lesson' user.id %}" class="w-full text-center py-2 px-4 bg-green-500 rounded-xl font-semibold text-white mb-2 hover:bg-green-600 transition">
                     Book Lesson
                 </a>
-                <a href="#" class="w-full text-center py-2 px-4 bg-blue-500 rounded-xl font-semibold text-white hover:bg-blue-600 transition">
+                <a href="#"
+                    class="w-full text-center py-2 px-4 bg-blue-500 rounded-xl font-semibold text-white hover:bg-blue-600 transition view-details-btn"
+                    data-teacher-id="{{ user.id }}">
                     View Details
                 </a>
+
                 {% else %}
                 <a href="{% url 'accounts:login' %}" class="w-full text-center py-2 px-4 bg-blue-500 rounded-xl font-semibold text-white hover:bg-blue-600 transition">
                     Log In for More Options
@@ -67,4 +68,114 @@
         {% endfor %}
     </div>
 </div>
+
+<!-- MODAL -->
+<div id="teacherModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+  <div class="bg-gray-900 rounded-3xl w-11/12 md:w-2/3 lg:w-1/2 p-8 relative">
+
+    <button id="modalCloseBtn" class="absolute top-4 right-4 text-white text-3xl hover:text-red-500">&times;</button>
+
+    <div class="flex flex-col md:flex-row gap-6">
+      <!-- Avatar -->
+    <div id="modalAvatarWrapper" class="w-40 h-40 md:w-48 md:h-48 rounded-full border-4 border-blue-500 flex items-center justify-center overflow-hidden flex-shrink-0 bg-gray-600 text-white text-4xl font-bold">
+        <img id="modalAvatar" src="" alt="Avatar" class="w-full h-full object-cover hidden">
+        <span id="modalInitials"></span>
+    </div>
+
+
+
+      <!-- Info -->
+      <div class="flex-1 text-white space-y-3">
+        <h2 id="modalName" class="text-3xl font-bold"></h2>
+        <p id="modalSubjects" class="flex flex-wrap gap-2 text-gray-300"></p>
+        <p id="modalTitleAge" class="text-gray-300"></p>
+        <p id="modalPrice" class="text-gray-300"></p>
+        <p id="modalExtra" class="text-gray-300"></p>
+        <p id="modalDiscount" class="text-gray-300"></p>
+        <p id="modalEmail" class="text-gray-300"></p>
+
+        <!-- BOOK LESSON BUTTON -->
+        <a id="modalBookBtn" href="#" class="block w-full text-center py-2 px-4 bg-green-500 rounded-xl font-semibold text-white hover:bg-green-600 transition">
+          Book Lesson
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById('teacherModal');
+  const closeBtn = document.getElementById('modalCloseBtn');
+  const modalBookBtn = document.getElementById('modalBookBtn');
+
+  // Pola w modalu
+  const modalAvatar = document.getElementById('modalAvatar');
+  const modalName = document.getElementById('modalName');
+  const modalSubjects = document.getElementById('modalSubjects');
+  const modalTitleAge = document.getElementById('modalTitleAge');
+  const modalPrice = document.getElementById('modalPrice');
+  const modalExtra = document.getElementById('modalExtra');
+  const modalDiscount = document.getElementById('modalDiscount');
+  const modalEmail = document.getElementById('modalEmail');
+
+  function calculateAge(dob) {
+    if (!dob) return 'N/A';
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+    return age;
+  }
+
+  function getTitle(gender) {
+    if (gender === 'male') return 'Mr.';
+    if (gender === 'female') return 'Ms.';
+    return '';
+  }
+
+  document.querySelectorAll('.view-details-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const teacherId = btn.dataset.teacherId;
+
+      const res = await fetch("{% url 'accounts:teacher_json' 0 %}".replace('/0/', `/${teacherId}/`));
+      const data = await res.json();
+
+      const title = getTitle(data.gender);
+      modalAvatar.src = data.avatar || "{% static 'default-avatar.png' %}";
+      modalName.textContent = `${title} ${data.name}`;
+
+      if (data.avatar) {
+        modalAvatar.src = data.avatar;
+        modalAvatar.classList.remove('hidden');
+        document.getElementById('modalInitials').textContent = '';
+        } else {
+        modalAvatar.classList.add('hidden');
+        document.getElementById('modalInitials').textContent = data.name.split(' ').map(n => n[0]).join('');
+        }
+
+
+      const age = calculateAge(data.date_of_birth);
+      modalTitleAge.textContent = `Age: ${age} yo`;
+      modalSubjects.innerHTML = data.subjects.map(s => `<span class="px-2 py-1 bg-gray-700 rounded">${s}</span>`).join('');
+
+      const indPriceHour = data.price_per_minute_individual ? (parseFloat(data.price_per_minute_individual) * 60).toFixed(2) : '-';
+      const grpPriceHour = data.price_per_minute_group ? (parseFloat(data.price_per_minute_group) * 60).toFixed(2) : '-';
+      modalPrice.textContent = `Individual: ${indPriceHour} zł/h`;
+      modalDiscount.textContent = `Recurring discount: ${data.recurring_discount_percent || 0}%`;
+      modalEmail.textContent = `Contact: ${data.email || 'N/A'}`;
+
+      modalBookBtn.href = "{% url 'book_lesson' 0 %}".replace('/0/', `/${teacherId}/`);
+
+      modal.classList.remove('hidden');
+    });
+  });
+
+  closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+  modal.addEventListener('click', e => {
+    if (e.target === modal) modal.classList.add('hidden');
+  });
+</script>
+
 {% endblock %}

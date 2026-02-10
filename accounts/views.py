@@ -149,3 +149,20 @@ def calendar_view(request):
         'teacher': teacher
     })
 
+import json
+from django.http import JsonResponse
+
+def teacher_json(request, pk):
+    teacher = get_object_or_404(Teacher, pk=pk)
+    return JsonResponse({
+        "name": f"{teacher.user.first_name} {teacher.user.last_name}",
+        "avatar": teacher.user.avatar.url if teacher.user.avatar else "",
+        "gender": teacher.user.gender,
+        "email": teacher.user.email,
+        "date_of_birth": teacher.user.date_of_birth.strftime("%Y-%m-%d") if teacher.user.date_of_birth else "",
+        "subjects": list(teacher.subjects.values_list("name", flat=True)),
+        "price_per_minute_individual": str(teacher.price_per_minute_individual or ""),
+        "price_per_minute_group": str(teacher.price_per_minute_group or ""),
+        "extra_student_group_minute_price": str(teacher.extra_student_group_minute_price or ""),
+        "recurring_discount_percent": teacher.recurring_discount_percent,
+    })

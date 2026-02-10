@@ -11,10 +11,12 @@
     <p class="text-gray-400 text-xl md:text-2xl mb-16 max-w-3xl mx-auto">
       Find expert tutors, book lessons in seconds, and study on your own terms.
     </p>
+    {% if not user.is_authenticated %}
     <a href="{% url 'accounts:register' %}" 
        class="inline-block bg-blue-600 hover:bg-blue-700 text-white text-3xl md:text-4xl px-10 py-5 rounded-full shadow-lg transform transition-all hover:scale-105 hover:shadow-blue-500/40">
        Sign Up Now
     </a>
+    {% endif %}
 
     
   </div>
@@ -23,46 +25,70 @@
   <div class="border-t border-black mx-16 opacity-50"></div>
 
   <!-- HOW IT WORKS -->
-  <div class="text-center py-32">
-    <h2 class="text-4xl md:text-6xl font-semibold mb-20 tracking-tight text-gray-100">
-      How it works
-    </h2>
+<div class="text-center py-32">
+  <h2 class="text-4xl md:text-6xl font-semibold mb-20 tracking-tight text-gray-100">
+    How it works
+  </h2>
 
-    <div class="flex flex-col md:flex-row justify-center items-center gap-16 md:gap-12 px-8 md:px-0">
-      <!-- Step 1 -->
-      <div class="group text-center w-64 transform transition-all hover:scale-105">
-        <div class="w-32 h-32 mx-auto mb-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-xl group-hover:shadow-blue-500/50">
-          <img src="{% static 'user-avatar.png' %}" alt="Sign Up" class="w-16 h-16">
-        </div>
-        <p class="text-3xl font-semibold text-gray-100">Sign Up</p>
-        <p class="text-gray-400 text-lg mt-2">Create your free account and set up your profile.</p>
+  <div class="flex flex-col md:flex-row justify-center items-center gap-16 md:gap-12 px-8 md:px-0">
+    {% if not user.is_authenticated %}
+    <!-- STEP 1 -->
+    <a href="/register"
+       class="group text-center w-64 transform transition-all hover:scale-105 rounded-2xl">
+      <div
+        class="w-32 h-32 mx-auto mb-8 rounded-full
+               bg-gradient-to-br from-blue-500 to-blue-700
+               flex items-center justify-center shadow-xl
+               group-hover:shadow-blue-500/50 transition">
+        <img src="{% static 'user-avatar.png' %}" alt="Sign Up" class="w-16 h-16">
       </div>
+      <p class="text-3xl font-semibold text-gray-100">Sign Up</p>
+      <p class="text-gray-400 text-lg mt-2">
+        Create your free account and set up your profile.
+      </p>
+    </a>
 
-      <!-- Arrow -->
-      <div class="hidden md:block text-7xl text-gray-400 font-thin">&gt;</div>
-
-      <!-- Step 2 -->
-      <div class="group text-center w-64 transform transition-all hover:scale-105">
-        <div class="w-32 h-32 mx-auto mb-8 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-xl group-hover:shadow-indigo-500/50">
-          <img src="{% static 'teacher-avatar.png' %}" alt="Select a teacher" class="w-16 h-16">
-        </div>
-        <p class="text-3xl font-semibold text-gray-100">Select a Teacher</p>
-        <p class="text-gray-400 text-lg mt-2">Browse verified tutors and find your perfect match.</p>
+    <!-- ARROW -->
+    <div class="hidden md:block text-7xl text-gray-400 font-thin">&gt;</div>
+    {% endif %}
+    <!-- STEP 2 -->
+    <a href="/users"
+       class="group text-center w-64 transform transition-all hover:scale-105 rounded-2xl">
+      <div
+        class="w-32 h-32 mx-auto mb-8 rounded-full
+               bg-gradient-to-br from-indigo-500 to-indigo-700
+               flex items-center justify-center shadow-xl
+               group-hover:shadow-indigo-500/50 transition">
+        <img src="{% static 'teacher-avatar.png' %}" alt="Select a teacher" class="w-16 h-16">
       </div>
+      <p class="text-3xl font-semibold text-gray-100">Select a Teacher</p>
+      <p class="text-gray-400 text-lg mt-2">
+        Browse verified tutors and find your perfect match.
+      </p>
+    </a>
 
-      <!-- Arrow -->
-      <div class="hidden md:block text-7xl text-gray-400 font-thin">&gt;</div>
+    <!-- ARROW -->
+    <div class="hidden md:block text-7xl text-gray-400 font-thin">&gt;</div>
 
-      <!-- Step 3 -->
-      <div class="group text-center w-64 transform transition-all hover:scale-105">
-        <div class="w-32 h-32 mx-auto mb-8 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center shadow-xl group-hover:shadow-purple-500/50">
-          <img src="{% static 'calendar.png' %}" alt="Schedule a lesson" class="w-16 h-16">
-        </div>
-        <p class="text-3xl font-semibold text-gray-100">Schedule a Lesson</p>
-        <p class="text-gray-400 text-lg mt-2">Book your class and start learning instantly.</p>
+    <!-- STEP 3 -->
+    <a href="/users"
+       class="group text-center w-64 transform transition-all hover:scale-105 rounded-2xl">
+      <div
+        class="w-32 h-32 mx-auto mb-8 rounded-full
+               bg-gradient-to-br from-purple-500 to-purple-700
+               flex items-center justify-center shadow-xl
+               group-hover:shadow-purple-500/50 transition">
+        <img src="{% static 'calendar.png' %}" alt="Schedule a lesson" class="w-16 h-16">
       </div>
-    </div>
+      <p class="text-3xl font-semibold text-gray-100">Schedule a Lesson</p>
+      <p class="text-gray-400 text-lg mt-2">
+        Book your class and start learning instantly.
+      </p>
+    </a>
+
   </div>
+</div>
+
 </div>
 
 {% endblock %}

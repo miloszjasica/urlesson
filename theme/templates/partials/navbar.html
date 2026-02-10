@@ -31,8 +31,8 @@
 
         <div class="relative">
           <button id="profileBtn" class="relative flex items-center justify-center rounded-full overflow-hidden w-12 h-12 border-2 border-gray-600 bg-gray-800 hover:border-blue-400 transition">
-            {% if request.user.profile_image %}
-              <img src="{{ request.user.profile_image.url }}" alt="Profile" class="w-full h-full object-cover">
+            {% if user.avatar %}
+              <img src="{{ user.avatar.url }}" alt="Profile" class="w-full h-full object-cover">
             {% else %}
               <span class="text-lg font-semibold text-white">
                 {{ request.user.first_name|default:request.user.username|slice:":1" }}{{ request.user.last_name|slice:":1" }}
@@ -68,8 +68,8 @@
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
       const cookies = document.cookie.split(";");
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
+      for (let cookie of cookies) {
+        cookie = cookie.trim();
         if (cookie.startsWith(name + "=")) {
           cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
           break;
@@ -79,61 +79,76 @@
     return cookieValue;
   }
 
-  const button = document.getElementById('notifications-button');
-  const dropdown = document.getElementById('notifications-dropdown');
-  const countSpan = document.getElementById('notifications-count');
+  const notificationsBtn = document.getElementById('notifications-button');
+  const notificationsDropdown = document.getElementById('notifications-dropdown');
+  const notificationsCount = document.getElementById('notifications-count');
+
+  const profileBtn = document.getElementById('profileBtn');
+  const profileDropdown = document.getElementById('profileDropdown');
+
 
   async function loadNotifications() {
     try {
       const res = await fetch("{% url 'notifications_json' %}");
       const data = await res.json();
 
-      dropdown.innerHTML = data.map(n => `
+      notificationsDropdown.innerHTML = data.map(n => `
         <div class="px-4 py-2 hover:bg-gray-700 border-b border-gray-700">
           ${n.message}
         </div>
       `).join("");
 
-      const unreadCount = data.filter(n => !n.read).length;
-      if (unreadCount > 0) {
-        countSpan.textContent = unreadCount;
-        countSpan.classList.remove("hidden");
+      const unread = data.filter(n => !n.read).length;
+      if (unread > 0) {
+        notificationsCount.textContent = unread;
+        notificationsCount.classList.remove("hidden");
       } else {
-        countSpan.classList.add("hidden");
+        notificationsCount.classList.add("hidden");
       }
-
     } catch (err) {
-      console.error("Error:", err);
+      console.error(err);
     }
   }
 
-  button?.addEventListener('click', () => {
-    dropdown.classList.toggle('hidden');
-    if (!dropdown.classList.contains('hidden')) {
-      countSpan.classList.add('hidden');
+  notificationsBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+
+    notificationsDropdown.classList.toggle('hidden');
+    profileDropdown?.classList.add('hidden');
+
+    if (!notificationsDropdown.classList.contains('hidden')) {
+      notificationsCount.classList.add('hidden');
+
       fetch("{% url 'mark_notifications_read' %}", {
         method: "POST",
         headers: {
           "X-CSRFToken": getCookie("csrftoken"),
           "Content-Type": "application/json"
         },
-      }).then(() => loadNotifications());
+      });
     }
+  });
+
+  notificationsDropdown?.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
+  profileBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+
+    profileDropdown.classList.toggle('hidden');
+    notificationsDropdown?.classList.add('hidden');
+  });
+
+  profileDropdown?.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
+  document.addEventListener('click', () => {
+    notificationsDropdown?.classList.add('hidden');
+    profileDropdown?.classList.add('hidden');
   });
 
   loadNotifications();
-
-  // Dropdown profilu
-  const profileBtn = document.getElementById('profileBtn');
-  const profileDropdown = document.getElementById('profileDropdown');
-
-  profileBtn?.addEventListener('click', () => {
-    profileDropdown.classList.toggle('hidden');
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!profileBtn?.contains(e.target) && !profileDropdown?.contains(e.target)) {
-      profileDropdown?.classList.add('hidden');
-    }
-  });
 </script>
+
