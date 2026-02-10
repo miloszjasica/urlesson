@@ -1,7 +1,6 @@
 from django.contrib import admin
 from .models import LessonRequest, TeacherAvailabilityPeriod
 from accounts.models import CustomUser, Teacher, Student, Subject
-from messages_app.models import Message
 
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
@@ -12,7 +11,7 @@ class CustomUserAdmin(BaseUserAdmin):
     list_display = ('email', 'first_name', 'last_name', 'role', 'is_staff', 'is_superuser')
     list_filter = ('role', 'is_staff', 'is_superuser')
     fieldsets = (
-        (None, {'fields': ('email', 'password', 'role')}),
+        (None, {'fields': ('email', 'password', 'role', 'first_name', 'last_name', 'date_of_birth', 'gender', 'avatar')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
     )
     add_fieldsets = (
@@ -70,17 +69,3 @@ class TeacherAvailabilityPeriodAdmin(admin.ModelAdmin):
         return obj.teacher.email
     teacher_email.short_description = 'Teacher Email'
     
-
-@admin.register(Message)
-class MessageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'sender_email', 'recipient_email', 'timestamp', 'is_read')
-    list_filter = ('is_read', 'timestamp')
-    search_fields = ('sender__email', 'recipient__email', 'content')
-
-    def sender_email(self, obj):
-        return obj.sender.email
-    sender_email.short_description = 'Sender Email'
-
-    def recipient_email(self, obj):
-        return obj.recipient.email
-    recipient_email.short_description = 'Recipient Email'

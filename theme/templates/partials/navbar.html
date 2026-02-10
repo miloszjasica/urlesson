@@ -29,13 +29,6 @@
           <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-gray-800 text-white rounded-lg shadow-lg overflow-hidden border border-gray-700 z-50"></div>
         </div>
 
-        <button id="openMessagesBtn" class="relative p-2 rounded-full hover:bg-gray-800 transition">
-          <span class="material-symbols-outlined text-2xl">chat</span>
-          <span id="chat-unread-badge"
-                class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1 hidden">
-          </span>
-        </button>
-
         <div class="relative">
           <button id="profileBtn" class="relative flex items-center justify-center rounded-full overflow-hidden w-12 h-12 border-2 border-gray-600 bg-gray-800 hover:border-blue-400 transition">
             {% if request.user.profile_image %}

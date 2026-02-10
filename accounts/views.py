@@ -67,35 +67,42 @@ def register_extra_view(request):
 @login_required
 def profile_view(request):
     user = request.user
-    password_form = SetPasswordForm(request.user)
-    show_password_form = False 
+    password_form = SetPasswordForm(user)
+    show_password_form = False
 
     editable_fields = [
-        #('Email', 'email'),
-        #('Role', 'get_role_display'),
-        #('Date of birth', 'date_of_birth'),
+        ('First name', 'first_name'),
+        ('Last name', 'last_name'),
+        ('Email', 'email'),
+        ('Role', 'role'),
         ('Password', 'password'),
     ]
 
     if request.method == 'POST':
-        field = request.POST.get('field')
-        value = request.POST.get('value')
+        # Upload avatara
+        if 'avatar' in request.FILES:
+            user.avatar = request.FILES['avatar']
+            user.save()
+            messages.success(request, "Avatar updated successfully.")
+            return redirect('accounts:profile')
 
-        if field == 'password':
-            show_password_form = True 
-            form = SetPasswordForm(request.user, request.POST)
-            if form.is_valid():
-                form.save()
-                update_session_auth_hash(request, request.user)
+        # Jeśli edytujemy hasło
+        if 'new_password1' in request.POST and 'new_password2' in request.POST:
+            password_form = SetPasswordForm(user, request.POST)
+            if password_form.is_valid():
+                password_form.save()
                 messages.success(request, "Password changed successfully.")
                 return redirect('accounts:profile')
             else:
-                password_form = form
+                show_password_form = True
 
-        elif field in ['email', 'first_name', 'last_name', 'date_of_birth',]:
+        # Inline edycja innych pól
+        field = request.POST.get('field')
+        value = request.POST.get('value')
+        if field in ['first_name', 'last_name', 'email', 'role']:
             setattr(user, field, value)
             user.save()
-            messages.success(request, f'Changed field: {field}')
+            messages.success(request, f"{field.replace('_',' ').title()} updated.")
             return redirect('accounts:profile')
 
     return render(request, 'accounts/profile.html', {
@@ -104,6 +111,9 @@ def profile_view(request):
         'password_form': password_form,
         'show_password_form': show_password_form,
     })
+
+
+
 
 @login_required
 def edit_pricing_view(request):

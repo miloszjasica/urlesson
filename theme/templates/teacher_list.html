@@ -21,14 +21,6 @@
         {% for user in object_list %}
         <div class="relative bg-gray-800 rounded-3xl shadow-2xl overflow-hidden transform transition-all hover:shadow-gray-500/50 p-6 flex flex-col items-start">
             
-            {% if request.user.is_authenticated %}
-            <button 
-                class="chat-button absolute top-4 right-4 text-blue-400 hover:text-blue-600 material-symbols-outlined"
-                data-user-id="{{ user.id }}"
-                data-user-name="{{ user.first_name|escapejs }} {{ user.last_name|escapejs }}">
-                chat
-            </button>
-            {% endif %}
 
             <div class="flex items-center mb-4 w-full">
                 {% if user.profile_image.url %}

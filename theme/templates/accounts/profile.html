@@ -2,84 +2,145 @@
 {% load custom_tags %}
 
 {% block content %}
-<div class="bg-gray-900 text-white p-32">
-  <h2 class="text-5xl underline mb-16">My profile</h2>
-  {% for label, field in editable_fields %}
-    <div class="mb-4" id="field-{{ field }}">
-      <div class="flex w-[50%] items-center justify-between">
-        <p class="text-2xl mb-1 font-semibold">{{ label }}:
-          {% if field == 'get_role_display' %}
-            {{ user.get_role_display }}
-          {% elif field == 'password' %}
-            ********
-          {% else %}
-            <span class="field-value">{{ user|attr:field }}</span>
-          {% endif %}
-        </p>
+<div class="text-white px-32 py-16">
 
-        {% if field == 'password'%}
-          <button class="edit-btn text-2xl bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded" data-field="{{ field }}">
-            Edit
-          </button>
-        {% endif %}
-      </div>
 
-      <form method="post" class="edit-form {% if field == 'password' and show_password_form %}block{% else %}hidden{% endif %} mt-2" data-field="{{ field }}">
-        {% csrf_token %}
-        <input type="hidden" name="field" value="{{ field }}">
+  <div class="flex gap-16 items-start mt-16">
 
-        {% if field == 'password' %}
-          <div>
-            {{ password_form.new_password1|add_class:"text-black px-2 py-1 rounded" }}
-            {% if password_form.new_password1.errors %}
-              <p class="text-red-400 text-sm mt-1">{{ password_form.new_password1.errors.0 }}</p>
-            {% endif %}
-          </div>
-          <div class="mt-2">
-            {{ password_form.new_password2|add_class:"text-black px-2 py-1 rounded" }}
-            {% if password_form.new_password2.errors %}
-              <p class="text-red-400 text-sm mt-1">{{ password_form.new_password2.errors.0 }}</p>
-            {% endif %}
-          </div>
-        {% elif field == 'email' %}
-          <input type="email" name="value" class="text-black px-2 py-1 rounded" value="{{ user.email }}">
+    <div class="relative w-72 h-72 group cursor-pointer">
+      <button id="avatarBtn" class="w-full h-full rounded-full overflow-hidden border-4 border-gray-600 relative">
+        {% if user.avatar %}
+          <img src="{{ user.avatar.url }}" alt="Avatar" class="w-full h-full object-cover">
         {% else %}
-          <input type="text" name="value" class="text-black px-2 py-1 rounded" value="{{ user|attr:field }}">
+          <span class="text-5xl font-bold text-white flex items-center justify-center w-full h-full">
+            {{ user.first_name|default:user.email|slice:":1" }}{{ user.last_name|slice:":1" }}
+          </span>
         {% endif %}
 
-        <button type="submit" class="text-xl bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded ml-2">OK</button>
-        <button type="button" class="cancel-btn text-xl bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded ml-1">Cancel</button>
-      </form>
+        <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition">
+          <span class="material-symbols-outlined text-white text-4xl">edit</span>
+        </div>
+      </button>
+
+      <form id="avatarForm" method="post" enctype="multipart/form-data"
+      class="absolute inset-0 flex flex-col items-center justify-center bg-gray-800 bg-opacity-0 rounded-lg p-4 hidden">
+  {% csrf_token %}
+
+  <!-- Wrapper do ładnego wyśrodkowania browse -->
+  <label for="avatarInput" class="flex flex-col items-center justify-center cursor-pointer">
+    <div class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded mb-2 text-center">
+      Browse file
     </div>
-  {% endfor %}
+    <input id="avatarInput" type="file" name="avatar" accept="image/*" class="hidden">
+  </label>
+
+  <button type="submit" class="bg-green-600 hover:bg-green-700 px-4 py-1 rounded text-white text-sm mb-2">
+    Upload
+  </button>
+  <button type="button" id="avatarCancelBtn" class="bg-red-600 px-4 py-1 text-gray-300 hover:text-white text-sm">
+    Cancel
+  </button>
+</form>
+
+    </div>
+
+    <!-- Editable fields -->
+    <div class="flex-1 space-y-6">
+      {% for label, field in editable_fields %}
+        <div class="flex items-center justify-between w-full" id="field-{{ field }}">
+          <p class="text-2xl font-semibold">
+            {{ label }}:
+            {% if field == 'password' %}
+              ********
+            {% elif field == 'role' %}
+              {{ user.get_role_display }}
+            {% else %}
+              <span class="field-value">{{ user|attr:field }}</span>
+            {% endif %}
+          </p>
+
+          {% if field != 'password' %}
+            <button class="edit-btn bg-blue-600 hover:bg-blue-700 px-4 py-1 rounded text-white"
+                    data-field="{{ field }}">Edit</button>
+          {% endif %}
+
+          <!-- Formularz inline -->
+          {% if field == 'password' %}
+            <form method="post" class="edit-form hidden flex flex-col gap-2" data-field="password">
+              {% csrf_token %}
+              {{ password_form.new_password1|add_class:"text-black px-3 py-1 rounded w-64" }}
+              {% if password_form.new_password1.errors %}
+                <p class="text-red-400">{{ password_form.new_password1.errors.0 }}</p>
+              {% endif %}
+              {{ password_form.new_password2|add_class:"text-black px-3 py-1 rounded w-64" }}
+              {% if password_form.new_password2.errors %}
+                <p class="text-red-400">{{ password_form.new_password2.errors.0 }}</p>
+              {% endif %}
+              <button type="submit" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-white">OK</button>
+              <button type="button" class="cancel-btn bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white">
+                Cancel
+              </button>
+            </form>
+          {% else %}
+            <form method="post" class="edit-form hidden flex items-center gap-2" data-field="{{ field }}">
+              {% csrf_token %}
+              <input type="hidden" name="field" value="{{ field }}">
+              {% if field == 'role' %}
+                <select name="value" class="text-black px-3 py-1 rounded">
+                  {% for key, label in user.ROLE_CHOICES %}
+                    <option value="{{ key }}" {% if user.role == key %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              {% else %}
+                <input type="text" name="value" class="text-black px-3 py-1 rounded" value="{{ user|attr:field }}">
+              {% endif %}
+              <button type="submit" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-white">OK</button>
+              <button type="button" class="cancel-btn bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white">Cancel</button>
+            </form>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+
   {% if user.is_teacher %}
-          <a href="{% url 'teacher_pricing' %}" class="text-3xl inline-block mb-4 px-4 py-2 bg-green-600 text-white rounded">
-            Set lesson price
-          </a>
-      {% endif %}
+    <a href="{% url 'teacher_pricing' %}"
+       class="inline-block mt-12 text-2xl bg-green-600 hover:bg-green-700 px-6 py-3 rounded">
+      Set lesson price
+    </a>
+  {% endif %}
+
 </div>
 
 <script>
+  // Avatar toggle
+  const avatarBtn = document.getElementById('avatarBtn');
+  const avatarForm = document.getElementById('avatarForm');
+  const avatarCancel = document.getElementById('avatarCancelBtn');
+
+  avatarBtn.addEventListener('click', () => avatarForm.classList.toggle('hidden'));
+  avatarCancel.addEventListener('click', () => avatarForm.classList.add('hidden'));
+
+  // Editable inline fields
   document.querySelectorAll('.edit-btn').forEach(button => {
     button.addEventListener('click', () => {
-      const field = button.getAttribute('data-field');
-      const div = document.querySelector(`#field-${field}`);
-      div.querySelector('.edit-form').classList.remove('hidden');
+      const field = button.dataset.field;
+      const wrapper = document.getElementById(`field-${field}`);
+      wrapper.querySelector('.edit-form').classList.remove('hidden');
       button.classList.add('hidden');
-      const span = div.querySelector('.field-value');
-      if (span) span.classList.add('hidden');
+      wrapper.querySelector('.field-value')?.classList.add('hidden');
     });
   });
 
   document.querySelectorAll('.cancel-btn').forEach(button => {
     button.addEventListener('click', () => {
       const form = button.closest('.edit-form');
-      const field = form.getAttribute('data-field');
-      const div = document.querySelector(`#field-${field}`);
+      const field = form.dataset.field;
+      const wrapper = document.getElementById(`field-${field}`);
       form.classList.add('hidden');
-      div.querySelector('.edit-btn').classList.remove('hidden');
-      const span = div.querySelector('.field-value');
-      if (span) span.classList.remove('hidden');
+      wrapper.querySelector('.edit-btn')?.classList.remove('hidden');
+      wrapper.querySelector('.field-value')?.classList.remove('hidden');
     });
   });
 </script>

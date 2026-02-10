@@ -45,6 +45,12 @@ class CustomUser(AbstractUser):
         ('female', 'Female'),
         ('other', 'Other'),
     )
+    
+    avatar = models.ImageField(
+        upload_to='avatars/',
+        null=True,
+        blank=True
+    )
 
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     date_of_birth = models.DateField(null=True, blank=True)

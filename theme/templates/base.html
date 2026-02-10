@@ -3,15 +3,9 @@
 
   {% include "partials/navbar.html" %}
 
-  <main class="relative flex-grow {% if user.is_authenticated %}pr-[16.6667%]{% endif %}">
+  <main class="relative flex-grow">
       {% block content %}{% endblock %}
   </main>
-
-  {% if user.is_authenticated %}
-    {% include "messages/inbox_right.html" %}
-  {% endif %}
-
-  {% include "messages/inbox_right.html" %}
 
   {% include "partials/footer.html" %}
 

@@ -11,7 +11,6 @@ urlpatterns = [
     
     path('accounts/', include('accounts.urls', namespace='accounts')),
     path('notifications/', include('notifications.urls')),
-    path('messages/', include('messages_app.urls')),
 
     path('users/', views.teacher_list_view, name='teacher_list'),
     path("profile/", profile_view, name="profile"),
