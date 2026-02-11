@@ -1,3 +1,34 @@
+# urlesson
+This project implements a tutoring platform where users can interact through a web interface. It is based on Django and provides the core backend logic, database setup, and a modern frontend using Tailwind CSS.
+
+# 1. Tech Stack
+
+**Backend:** Python, Django
+
+**Frontend:** HTML, CSS (Tailwind)
+
+**Dev Tools:** django-tailwind, django-browser-reload
+
+**Database:** SQLite
+
+# 2. Demo
+
+# 3. Future
+
+The project is rewritting and extending into a more scalable architecture using Django (backend) + React (frontend) + PostgreSQL + Docker.
+
+**Future development will include:**
+
+- real-time chat between users,
+
+- file sharing functionality,
+
+- a review and rating system verified by AI to ensure authenticity and quality,
+
+- and an integrated AI chatbot to support users and enhance the learning experience.
+
+# 4. How to run
+
 1. Clone the repository and navigate to the project folder:
 
 ```bash
