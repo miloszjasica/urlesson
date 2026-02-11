@@ -12,6 +12,7 @@ This project implements a tutoring platform where users can interact through a w
 **Database:** SQLite
 
 # 2. Demo
+[Watch demo](demo/urlesson_demo.mp4)
 
 # 3. Future
 
