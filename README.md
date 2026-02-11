@@ -7,7 +7,7 @@ The platform is built around two main user roles: **Student** and **Teacher**.
 
 - **Teachers** can define their availability, set lesson prices, and manage incoming lesson requests by accepting or rejecting them. This allows teachers to fully control their schedules and teaching conditions.
 
-The platform also includes a **notification** system that keeps both students and teachers informed about important events such as lesson requests, confirmations, rejections, and schedule updates.
+urlesson also includes a **notification** system that keeps both students and teachers informed about important events such as lesson requests, confirmations, rejections, and schedule updates.
 
 # 1. Tech Stack
 
