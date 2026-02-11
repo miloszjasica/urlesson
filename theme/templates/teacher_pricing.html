@@ -28,35 +28,21 @@
 </form>
 
 <script>
-  const priceIndInput = document.getElementById('{{ form.price_per_minute_individual.id_for_label }}');
-  const priceGroupInput = document.getElementById('{{ form.price_per_minute_group.id_for_label }}');
-  const extraGroupInput = document.getElementById('{{ form.extra_student_group_minute_price.id_for_label }}');
+  document.addEventListener('DOMContentLoaded', function () {
+    const priceIndInput = document.getElementById('{{ form.price_per_minute_individual.id_for_label }}');
+    const earnings45min = document.getElementById('earnings-45min');
+    const earnings60min = document.getElementById('earnings-60min');
 
-  const earnings45min = document.getElementById('earnings-45min');
-  const earnings60min = document.getElementById('earnings-60min');
-  const earningsGroup2 = document.getElementById('earnings-group-2');
-  const earningsGroup3 = document.getElementById('earnings-group-3');
-  const earningsGroup4 = document.getElementById('earnings-group-4');
+    function calculateEarnings() {
+      const priceInd = parseFloat(priceIndInput.value) || 0;
+      earnings45min.textContent = (priceInd * 45).toFixed(2);
+      earnings60min.textContent = (priceInd * 60).toFixed(2);
+    }
 
-  function calculateEarnings() {
-    const priceInd = parseFloat(priceIndInput.value) || 0;
-    const priceGroup = parseFloat(priceGroupInput.value) || 0;
-    const extraGroup = parseFloat(extraGroupInput.value) || 0;
-
-    earnings45min.textContent = (priceInd * 45).toFixed(2);
-    earnings60min.textContent = (priceInd * 60).toFixed(2);
-
-    // For group lessons, extra students count: 1 for 2-student group, 2 for 3-student, 3 for 4-student groups
-    earningsGroup2.textContent = ((priceGroup + extraGroup * 1) * 45).toFixed(2);
-    earningsGroup3.textContent = ((priceGroup + extraGroup * 2) * 45).toFixed(2);
-    earningsGroup4.textContent = ((priceGroup + extraGroup * 3) * 45).toFixed(2);
-  }
-
-  priceIndInput.addEventListener('input', calculateEarnings);
-  priceGroupInput.addEventListener('input', calculateEarnings);
-  extraGroupInput.addEventListener('input', calculateEarnings);
-
-  calculateEarnings();
+    priceIndInput.addEventListener('input', calculateEarnings);
+    calculateEarnings();
+  });
 </script>
+
 
 {% endblock %}
