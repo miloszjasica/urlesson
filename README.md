@@ -1,5 +1,13 @@
 # urlesson
-This project implements a tutoring platform where users can interact through a web interface. It is based on Django and provides the core backend logic, database setup, and a modern frontend using Tailwind CSS.
+This project implements a tutoring platform where users can interact through a web interface. It is based on Django and provides the core backend logic, database setup and a frontend using Tailwind CSS.
+
+The platform is built around two main user roles: **Student** and **Teacher**.
+
+- **Students** can browse and choose teachers for specific subjects based on their preferences, availability, and pricing. They are able to schedule lessons by selecting time slots when a teacher is available and manage their upcoming lessons.
+
+- **Teachers** can define their availability, set lesson prices, and manage incoming lesson requests by accepting or rejecting them. This allows teachers to fully control their schedules and teaching conditions.
+
+The platform also includes a **notification** system that keeps both students and teachers informed about important events such as lesson requests, confirmations, rejections, and schedule updates.
 
 # 1. Tech Stack
 
